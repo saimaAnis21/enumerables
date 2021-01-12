@@ -31,18 +31,25 @@ module Enumerable
     my_each do |temp|
       temparr.push(temp) if yield(temp) == true
     end
-    temparr
+    return temparr
   end
 
   def my_all?(arg = nil)
-    if block_given?
+    return true if empty?
+    if block_given? && arg.nil?
       my_each { |temp| return false if yield(temp) == false }
-
-    elsif !arg.nil?
+       true
+    elsif  arg.nil? && !block_given?
+        my_each {|temp| return false if temp.nil? || temp==false}
+        true
+    elsif !arg.nil? && arg.instance_of?(Regexp) 
+      my_each {|temp| return false if !temp.match(arg)}
+      true
+    else
       my_each { |temp| return false if temp != arg }
-
+      true
     end
-    true
+  
   end
 
   def my_any?(args = nil)
@@ -123,13 +130,19 @@ puts '***my_each_with_index  method***'
 arr.my_each_with_index { |x, y| puts x if y.even? }
 
 puts '***my_select method***'
-puts [1, 2, 3, 4, 5].my_select(&:even?)
+puts [1, 2, 3, 4, 5].my_select {|x| x<=3}
+puts [1, 2, 3, 4, 5].my_select {|x| x%2==0}
 
 puts '***my_all method***'
 puts(%w[ant bear cat].my_all? { |x| x.length >= 3 })
 puts(%w[ant bear cat].my_all? { |x| x.length >= 4 })
-puts arr.my_all?(3)
+puts [0,1,2].my_all?{|x| x<3}
+puts [0,1,2].my_all?{|x| x<2}
+puts [3,3,3].my_all?(3)
 puts [].my_all?
+puts [0,nil,2].my_all?
+puts [0,false,2].my_all?
+puts %w[food fool foot].my_all?(/foo/)
 
 puts '***my_any method***'
 puts(%w[ant bear cat].my_any? { |x| x.length >= 3 })
