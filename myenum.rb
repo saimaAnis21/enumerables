@@ -55,27 +55,46 @@ module Enumerable
   
   end
 
-  def my_any?(args = nil)
-    if block_given?
+  def my_any?(arg = nil)
+    return false if empty?
+
+    if block_given? && arg.nil?
       my_each { |temp| return true if yield(temp) == true }
-
-    elsif !args.nil?
-      my_each { |temp| return true if temp == args }
-
+       false
+    elsif  arg.nil? && !block_given?
+        my_each {|temp| return true if temp}
+        false
+    elsif !arg.nil? && arg.instance_of?(Regexp) 
+      my_each {|temp| return true if temp.match(arg)}
+      false
+    elsif !arg.nil? && (arg.is_a? Class)
+      my_each {|temp| return true if (temp.class == arg || temp.class.superclass== arg )}
+      false
+    else
+      my_each { |temp| return true if temp == arg }
+      false
     end
-    false
-  end
+end
 
-  def my_none?(args = nil)
-    if block_given?
-      my_each { |temp| return false if yield(temp) == true }
-
-    elsif !args.nil?
-      my_each { |temp| return false if temp == args }
-
-    end
+def my_none?(arg = nil)
+  return true if empty?
+  if block_given? && arg.nil?
+    my_each { |temp| return false if yield(temp) == true }
+     true
+  elsif  arg.nil? && !block_given?
+      my_each {|temp| return false if temp}
+      true
+  elsif !arg.nil? && arg.instance_of?(Regexp) 
+    my_each {|temp| return false if temp.match(arg)}
+    true
+  elsif !arg.nil? && (arg.is_a? Class)
+    my_each {|temp| return false if (temp.class == arg || temp.class.superclass== arg )}
+    true
+  else
+    my_each { |temp| return false if temp == arg }
     true
   end
+end
 
   def my_count(args = nil)
     count = 0
@@ -149,14 +168,24 @@ puts %w[food fool foot].my_all?(/foo/)
 puts [1,2,3].my_all?(Numeric)
 
 puts '***my_any method***'
-puts(%w[ant bear cat].my_any? { |x| x.length >= 3 })
-puts(%w[ant bear cat].my_any? { |x| x.length >= 4 })
-puts [1, 3, 2, 6].my_any?(8)
+puts(%w[ant bear cat].my_any? { |x| x.length == 4 })
+puts(%w[ant bear cat].my_any? { |x| x.length >= 5 })
+puts [1, 3, 2, 6].my_any?(6)
 puts [].my_any?
+puts [nil,0,false].my_any?
+puts [nil,false].my_any?
+puts(%w[food drink].my_any?(/foo/))
+puts(%w[food drink].my_any?(/bar/))
 
 puts '***my_none method***'
 puts(%w[cat bat house].my_none? { |x| x == 'rat' })
 puts(%w[cat bat house].my_none? { |x| x == 'house' })
+puts(%w[cat bat house].my_none?(/d/))
+puts [].my_none?
+puts [nil].my_none?
+puts [nil,false].my_none?
+puts [nil,false,true].my_none?
+puts [1,3.14,42].my_none?(Float)
 
 ary = [1, 2, 4, 2]
 puts '***my_count method***'
