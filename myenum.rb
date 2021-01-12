@@ -1,24 +1,26 @@
 module Enumerable
   def my_each
     return to_enum(:my_each) unless block_given?
-
-    i = 0
-    while i < length
-      yield(self[i])
+     
+    arr=to_a
+     i = 0
+    loop do
+      yield(arr.to_a[i])
       i += 1
+      break if i== arr.to_a.length
     end
-    self
+    
   end
 
   def my_each_with_index
     return to_enum(:my_each_with_index) unless block_given?
 
     i = 0
-    while i < length
-      yield(self[i], i)
-      i += 1
+    my_each do |item|
+      yield(item,i)
+      i+=1
     end
-    self
+    
   end
 
   def my_select
@@ -109,13 +111,16 @@ def multiply_els(arr2)
 end
 
 arr = [1, 2, 3]
+
 # multiply_els(arr)
 
 puts '***my_each method***'
-arr.my_each { |x| puts x.to_s }
+[1,4,6,3,4].my_each { |x| puts x }
+%w[ant bear cat].my_each { |x| puts x }
+
 
 puts '***my_each_with_index  method***'
-arr.my_each_with_index { |x, y| puts "element #{x} with index #{y} " if y.even? }
+arr.my_each_with_index { |x, y| puts x if y.even? }
 
 puts '***my_select method***'
 puts [1, 2, 3, 4, 5].my_select(&:even?)
