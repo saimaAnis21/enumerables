@@ -45,6 +45,9 @@ module Enumerable
     elsif !arg.nil? && arg.instance_of?(Regexp) 
       my_each {|temp| return false if !temp.match(arg)}
       true
+    elsif !arg.nil? && (arg.is_a? Class)
+      my_each {|temp| return false if !(temp.class == arg || temp.class.superclass== arg )}
+      true
     else
       my_each { |temp| return false if temp != arg }
       true
@@ -143,6 +146,7 @@ puts [].my_all?
 puts [0,nil,2].my_all?
 puts [0,false,2].my_all?
 puts %w[food fool foot].my_all?(/foo/)
+puts [1,2,3].my_all?(Numeric)
 
 puts '***my_any method***'
 puts(%w[ant bear cat].my_any? { |x| x.length >= 3 })
