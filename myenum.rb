@@ -125,8 +125,6 @@ module Enumerable
   end
 
   def my_inject(initial = nil, sym = nil, &prc)
-    return self if empty?
-
     i = 1
     collector = to_a[0]
     j = to_a.length
