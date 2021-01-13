@@ -1,13 +1,17 @@
+# rubocop:disable Metrics/CyclomaticComplexity
+# rubocop:disable Metrics/PerceivedComplexity
+# rubocop:disable Metrics/ModuleLength
+# rubocop:disable Metrics/AbcSize
+# rubocop:disable Metrics/MethodLength
 module Enumerable
   def my_each
     return to_enum(:my_each) unless block_given?
 
-    arr = to_a
     i = 0
     loop do
-      yield(arr.to_a[i])
+      yield(to_a[i])
       i += 1
-      break if i == arr.to_a.length
+      break if i == to_a.length
     end
   end
 
@@ -25,10 +29,7 @@ module Enumerable
     return to_enum(:my_select) unless block_given?
 
     temparr = []
-
-    my_each do |temp|
-      temparr.push(temp) if yield(temp) == true
-    end
+    my_each { |temp| temparr.push(temp) if yield(temp) == true }
     temparr
   end
 
@@ -259,3 +260,9 @@ puts([1, 2, 3, 4].my_inject(:*))
 puts([1, 2, 3, 4].my_inject(:+))
 puts([1, 2, 3, 4].my_inject(2, :*))
 puts([1, 2, 3, 4].my_inject(2, :+))
+
+# rubocop:enable Metrics/CyclomaticComplexity
+# rubocop:enable Metrics/PerceivedComplexity
+# rubocop:enable Metrics/ModuleLength
+# rubocop:enable Metrics/AbcSize
+# rubocop:enable Metrics/MethodLength
